@@ -1,0 +1,51 @@
+{
+	"name": "bronze_admisiones_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sa_transporte",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Bronze/Csv"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Admisiones.csv",
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "admission_id",
+				"type": "String"
+			},
+			{
+				"name": "patient_id",
+				"type": "String"
+			},
+			{
+				"name": "admission_date",
+				"type": "String"
+			},
+			{
+				"name": "discharge_date",
+				"type": "String"
+			},
+			{
+				"name": "department",
+				"type": "String"
+			},
+			{
+				"name": "attending_doctor_id",
+				"type": "String"
+			}
+		]
+	}
+}
