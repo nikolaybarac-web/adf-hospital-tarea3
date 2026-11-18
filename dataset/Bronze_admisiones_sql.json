@@ -1,0 +1,47 @@
+{
+	"name": "Bronze_admisiones_sql",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_erp_transporte",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Bronze/sql"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "admission_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "patient_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "admission_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "discharge_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "department",
+				"type": "nvarchar"
+			},
+			{
+				"name": "attending_doctor_id",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "admissions"
+		}
+	}
+}
