@@ -21,6 +21,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "dw_bronze_faturacion",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],
@@ -48,12 +52,12 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> csv",
 				"source(output(",
-				"          billing_id as integer,",
-				"          admission_id as integer,",
+				"          billing_id as string,",
+				"          admission_id as string,",
 				"          charge_type as string,",
-				"          amount as decimal(19,4),",
+				"          amount as string,",
 				"          payment_status as string,",
-				"          payment_date as date",
+				"          payment_date as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -82,8 +86,22 @@
 				"select1, select2 union(byName: true)~> union1",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          billing_id as string,",
+				"          admission_id as string,",
+				"          charge_type as string,",
+				"          amount as string,",
+				"          payment_status as string,",
+				"          payment_date as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
