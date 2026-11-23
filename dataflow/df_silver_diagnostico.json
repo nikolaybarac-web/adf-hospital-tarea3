@@ -17,6 +17,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "dw_silver_diagnostico",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],
@@ -37,11 +41,28 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source1 derive() ~> derivedColumn1",
+				"source1 derive(diagnosis_id = toInteger(trim(toString(diagnosis_id))),",
+				"          admission_id = toInteger(trim(toString(admission_id))),",
+				"          icd_code = upper(trim(toString(icd_code))),",
+				"          diagnosis_description = trim(toString(diagnosis_description)),",
+				"          severity = upper(trim(toString(severity)))) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          diagnosis_id as integer,",
+				"          admission_id as integer,",
+				"          icd_code as string,",
+				"          diagnosis_description as string,",
+				"          severity as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}

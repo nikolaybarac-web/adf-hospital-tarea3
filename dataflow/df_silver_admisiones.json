@@ -15,8 +15,20 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dw_silver_admisiones",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          admission_id as string,",
@@ -29,7 +41,31 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     format: 'table') ~> source1",
+				"source1 derive(admission_id = toInteger(trim(toString(admission_id))),",
+				"          patient_id = toInteger(trim(toString(patient_id))),",
+				"          admission_date = trim(regexReplace(toString(admission_date), '[\\\\r\\\\n\\\\t]+', ' ')),",
+				"          discharge_date = trim(regexReplace(toString(discharge_date), '[\\\\r\\\\n\\\\t]+', ' ')),",
+				"          department = upper(trim(regexReplace(toString(department), '[\\\\r\\\\n\\\\t]+', ' '))),",
+				"          attending_doctor_id = toInteger(trim(toString(attending_doctor_id)))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          admission_id as integer,",
+				"          patient_id as integer,",
+				"          admission_date as date,",
+				"          discharge_date as date,",
+				"          department as string,",
+				"          attending_doctor_id as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
