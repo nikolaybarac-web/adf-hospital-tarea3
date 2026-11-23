@@ -12,7 +12,7 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "billing_id",
+				"name": "diagnosis_id",
 				"type": "int",
 				"precision": 10
 			},
@@ -22,27 +22,21 @@
 				"precision": 10
 			},
 			{
-				"name": "charge_type",
+				"name": "icd_code",
 				"type": "nvarchar"
 			},
 			{
-				"name": "amount",
-				"type": "decimal",
-				"precision": 19,
-				"scale": 4
-			},
-			{
-				"name": "payment_status",
+				"name": "diagnosis_description",
 				"type": "nvarchar"
 			},
 			{
-				"name": "payment_date",
-				"type": "date"
+				"name": "severity",
+				"type": "nvarchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "billing"
+			"table": "diagnoses"
 		}
 	}
 }
