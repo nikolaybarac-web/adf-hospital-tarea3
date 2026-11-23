@@ -1,6 +1,9 @@
 {
 	"name": "df_bronze_facturacion",
 	"properties": {
+		"folder": {
+			"name": "bronze"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

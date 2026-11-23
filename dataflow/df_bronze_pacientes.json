@@ -1,6 +1,9 @@
 {
 	"name": "df_bronze_pacientes",
 	"properties": {
+		"folder": {
+			"name": "bronze"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
