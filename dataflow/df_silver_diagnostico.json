@@ -27,6 +27,12 @@
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -46,7 +52,20 @@
 				"          icd_code = upper(trim(toString(icd_code))),",
 				"          diagnosis_description = trim(toString(diagnosis_description)),",
 				"          severity = upper(trim(toString(severity)))) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 filter(!isNull(diagnosis_id) &&",
+				"!isNull(admission_id) &&",
+				"!isNull(icd_code) &&",
+				"!isNull(diagnosis_description) &&",
+				"!isNull(severity) &&",
+				"trim(icd_code) != '' &&",
+				"trim(diagnosis_description) != '' &&",
+				"trim(severity) != '') ~> filter1",
+				"filter1 aggregate(groupBy(diagnosis_id),",
+				"     admission_id = first(admission_id),",
+				"          icd_code = first(icd_code),",
+				"          diagnosis_description = first(diagnosis_description),",
+				"          severity = first(severity)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          diagnosis_id as integer,",

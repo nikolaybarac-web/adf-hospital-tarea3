@@ -30,6 +30,12 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -67,7 +73,23 @@
 				"          email = lower(trim(email)),",
 				"          address = trim(regexReplace(address, ' +', ' ')),",
 				"          insurance_provider = upper(trim(insurance_provider))) ~> derivedColumn2",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"derivedColumn2 filter(!isNull(patient_id) &&",
+				"!isNull(full_name) &&",
+				"!isNull(gender) &&",
+				"!isNull(date_of_birth) &&",
+				"!isNull(phone) &&",
+				"!isNull(email) &&",
+				"!isNull(address) &&",
+				"!isNull(insurance_provider)) ~> filter1",
+				"filter1 aggregate(groupBy(patient_id),",
+				"     full_name = first(full_name),",
+				"          gender = first(gender),",
+				"          date_of_birth = first(date_of_birth),",
+				"          phone = first(phone),",
+				"          email = first(email),",
+				"          address = first(address),",
+				"          insurance_provider = first(insurance_provider)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          patient_id as integer,",
