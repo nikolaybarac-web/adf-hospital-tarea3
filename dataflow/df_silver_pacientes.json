@@ -15,8 +15,23 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dw_silver_pacientes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          patient_id as string,",
@@ -31,7 +46,57 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     format: 'table') ~> source1",
+				"source1 derive(patient_id = toInteger(trim(patient_id)),",
+				"          full_name = trim(full_name),",
+				"          gender = upper(trim(gender)),",
+				"          date_of_birth = coalesce(\r",
+				"    toDate(trim(date_of_birth), 'yyyy-MM-dd'),\r",
+				"    toDate(trim(date_of_birth), 'MM/dd/yyyy'),\r",
+				"    toDate(trim(date_of_birth), 'dd-MMM-yyyy'),\r",
+				"    toDate(trim(date_of_birth), 'MM-dd-yy')\r",
+				"),",
+				"          phone = trim(phone),",
+				"          email = lower(trim(email)),",
+				"          address = trim(address),",
+				"          insurance_provider = upper(trim(insurance_provider))) ~> derivedColumn1",
+				"derivedColumn1 derive(full_name = initCap(trim(regexReplace(full_name, ' +', ' '))),",
+				"          gender = iif(upper(trim(gender)) == 'M' || upper(trim(gender)) == 'MALE', 'MALE',\r",
+				"iif(upper(trim(gender)) == 'F' || upper(trim(gender)) == 'FEMALE', 'FEMALE', 'UNKNOWN')),",
+				"          phone = regexReplace(trim(phone), '[^0-9+]', ''),",
+				"          email = lower(trim(email)),",
+				"          address = trim(regexReplace(address, ' +', ' ')),",
+				"          insurance_provider = upper(trim(insurance_provider))) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          patient_id as integer,",
+				"          full_name as string,",
+				"          gender as string,",
+				"          date_of_birth as date,",
+				"          phone as string,",
+				"          email as string,",
+				"          address as string,",
+				"          insurance_provider as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          patient_id,",
+				"          full_name,",
+				"          gender,",
+				"          date_of_birth,",
+				"          phone,",
+				"          email,",
+				"          address,",
+				"          insurance_provider",
+				"     )) ~> sink1"
 			]
 		}
 	}
